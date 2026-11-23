@@ -8,7 +8,6 @@ export default async (req) => {
 
   try {
     const { message } = await req.json();
-
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
