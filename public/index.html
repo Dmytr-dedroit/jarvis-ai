@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>Джарвіс</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f3f9;--card:#fff;--ink:#12131f;--muted:#777a8c;--line:rgba(18,19,31,.08);--field:#ecedf6;--g1:#5b5bf0;--g2:#ff8a65;--accent:#4f46e5;--on:#fff;--shadow:0 1px 2px rgba(18,19,31,.04),0 14px 34px -14px rgba(18,19,31,.16);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090a13;--card:#12142a;--ink:#eef0fb;--muted:#8c90ad;--line:rgba(255,255,255,.07);--field:#1b1e3a;--g1:#8c9bff;--g2:#ffb08a;--accent:#8c9bff;--on:#0a0c1f;--shadow:0 14px 34px -14px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#090a13;--card:#12142a;--ink:#eef0fb;--muted:#8c90ad;--line:rgba(255,255,255,.07);--field:#1b1e3a;--g1:#8c9bff;--g2:#ffb08a;--accent:#8c9bff;--on:#0a0c1f;--shadow:0 14px 34px -14px rgba(0,0,0,.7);color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;line-height:1.45}
+.serif{font-family:ui-serif,"New York","Iowan Old Style",Georgia,serif;font-weight:400;letter-spacing:-.02em}
+main{max-width:480px;margin:0 auto;padding:26px 18px 120px}
+h1{font-size:2.2rem;line-height:1.1;margin:4px 0 22px}
+.date{color:var(--muted);margin:0;font-size:.92rem;text-transform:capitalize}
+.card{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.hero{text-align:center;padding:28px 20px 22px}
+.ring{position:relative;width:200px;height:200px;margin:0 auto}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.ring .bg{stroke:var(--field)}
+.ring .fg{stroke:url(#rg);transition:stroke-dashoffset .8s ease}
+.ring b{position:absolute;inset:0;display:grid;place-content:center;font-weight:400}
+.score{font-size:3.8rem;line-height:1}
+.ring small{color:var(--muted);font-size:.82rem}
+.pill{display:inline-block;padding:9px 16px;border-radius:999px;background:var(--field);font-size:.92rem;margin-top:18px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.tile{font:inherit;color:inherit;text-align:left;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);border-radius:22px;padding:16px;cursor:pointer;min-height:96px}
+.tile b{display:block;font-size:1rem}
+.tile small{color:var(--muted);font-size:.82rem}
+.mb{height:4px;border-radius:4px;background:var(--field);margin-top:12px;overflow:hidden}
+.mb i{display:block;height:100%;background:linear-gradient(90deg,var(--g1),var(--g2))}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.chip{flex:none;border:0;background:var(--field);color:var(--muted);border-radius:999px;padding:10px 16px;min-height:44px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--on)}
+.les{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;border:0;background:transparent;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.les:last-child{border-bottom:0}
+.ck{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.9rem;color:transparent}
+.les.on .ck{background:linear-gradient(135deg,var(--g1),var(--g2));border:0;color:#fff}
+.les b{display:block}.les small{color:var(--muted)}
+.field{width:100%;border:0;background:var(--field);color:var(--ink);border-radius:16px;padding:14px;font:inherit;min-height:48px;margin-bottom:10px}
+.btn{border:0;background:var(--accent);color:var(--on);border-radius:16px;min-height:48px;padding:0 20px;font-weight:600;cursor:pointer}
+.btn.soft{background:var(--field);color:var(--ink)}
+.rem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.rem:last-child{border-bottom:0}.rem small{color:var(--muted)}.rem.fired b{opacity:.5;text-decoration:line-through}
+.msg{max-width:86%;padding:12px 14px;border-radius:20px;margin-bottom:10px;background:var(--field)}
+.msg.me{margin-left:auto;background:var(--accent);color:var(--on)}
+.empty{color:var(--muted);margin:0 0 10px}
+h2{font-size:1rem;margin:0 0 10px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--field);border-radius:14px;padding:12px 14px;min-height:46px;margin-bottom:8px;cursor:pointer}
+.opt.ok{background:#1f9d6b;color:#fff;border-color:transparent}
+.opt.bad{background:#d64545;color:#fff;border-color:transparent}
+.opt:disabled{cursor:default}
+nav{position:fixed;left:0;right:0;bottom:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;gap:4px}
+nav a{flex:1;max-width:110px;text-align:center;padding:10px 4px;border-radius:14px;color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600}
+nav a[aria-current="page"]{color:var(--accent);background:var(--field)}
+#toast{position:fixed;left:16px;right:16px;top:calc(12px + env(safe-area-inset-top,0px));max-width:448px;margin:0 auto;background:var(--ink);color:var(--bg);padding:14px 16px;border-radius:18px;display:none;z-index:5}
+</style>
+</head>
+<body>
+<div id="toast" role="status"></div>
+<main id="v"></main>
+<nav id="nav" aria-label="Розділи">
+<a href="#home">Головна</a><a href="#learn">Навчання</a><a href="#remind">Нагадування</a><a href="#ai">AI</a>
+</nav>
+<script>
+var L={
+prog:{n:'Програмування',l:[['Змінні й типи','Змінна зберігає значення: число, текст або так/ні.'],['Умови if/else','Програма вибирає дію залежно від умови.'],['Цикли','Цикл повторює дію, поки умова правдива.'],['Функції','Функція — іменований блок коду, який можна викликати знову.']]},
+trade:{n:'Трейдинг',l:[['Що таке свічка','Свічка показує ціну відкриття, закриття, максимум і мінімум за період.'],['Підтримка й опір','Рівні, біля яких ціна часто зупиняється або розвертається.'],['Ризик на угоду','Ризикуйте малою частиною рахунку, щоб серія збитків його не знищила.'],['Стоп-лосс','Заздалегідь визначений рівень виходу зі збиткової угоди.']]},
+school:{n:'Історія (НМТ)',l:[['Київська Русь','Держава зі столицею в Києві, що виникла в IX столітті. У 988 році князь Володимир Великий хрестив Русь.'],['Козацька доба','Запорізька Січ виникла в XVI столітті. У 1648 році почалося повстання під проводом Богдана Хмельницького.'],['Українська революція','Центральну Раду створили 1917 року. IV Універсал 22 січня 1918 року проголосив незалежність УНР.'],['Незалежність 1991','Акт проголошення незалежності ухвалили 24 серпня 1991 року, а 1 грудня його підтримав референдум.']]},
+eng:{n:'Англійська',l:[['Present Simple','Для звичок і фактів: I work, she works.'],['Past Simple','Для завершених дій: I worked, I went.'],['Артиклі a / an / the','A/an — один із багатьох, the — конкретний.'],['Фрази для розмови','How’s it going? Could you repeat that, please?']]}
+};
+var Q=[
+['У якому році відбулося хрещення Русі?',['862','988','1054','1240'],1,'Князь Володимир Великий охрестив Русь у 988 році.'],
+['Хто очолив повстання 1648 року?',['Іван Мазепа','Петро Сагайдачний','Богдан Хмельницький','Іван Сірко'],2,'Повстання 1648 року очолив Богдан Хмельницький.'],
+['Коли ухвалили Акт проголошення незалежності України?',['22 січня 1918','24 серпня 1991','1 грудня 1991','28 червня 1996'],1,'Акт проголошення незалежності ухвалили 24 серпня 1991 року.'],
+['Яка подія сталася 22 січня 1919 року?',['Акт Злуки УНР і ЗУНР','Хрещення Русі','Переяславська рада','Чорнобильська аварія'],0,'Цього дня проголосили Акт Злуки УНР і ЗУНР.'],
+['Із ким пов’язують «Руську Правду»?',['Святослав','Ярослав Мудрий','Данило Галицький','Ігор'],1,'Руську Правду традиційно пов’язують із Ярославом Мудрим.'],
+['Коли сталася аварія на Чорнобильській АЕС?',['1979','1986','1991','2004'],1,'Аварія сталася 26 квітня 1986 року.'],
+['З яким роком пов’язана Переяславська рада?',['1648','1654','1709','1917'],1,'Переяславська рада відбулася 1654 року.'],
+['Хто став першим Президентом незалежної України?',['Леонід Кучма','Віктор Ющенко','Леонід Кравчук','Михайло Грушевський'],2,'Леонід Кравчук обраний 1 грудня 1991 року.'],
+['Хто очолював Українську Центральну Раду?',['Симон Петлюра','Михайло Грушевський','Павло Скоропадський','Володимир Винниченко'],1,'Центральну Раду очолював Михайло Грушевський.'],
+['Що відбулося в Україні 1 грудня 1991 року?',['Акт Злуки','Референдум про незалежність і вибори Президента','Початок Помаранчевої революції','Ухвалення Конституції'],1,'Цього дня пройшли референдум і президентські вибори.'],
+['Коли ухвалили чинну Конституцію України?',['1991','1996','2004','2014'],1,'Конституцію ухвалили 28 червня 1996 року.'],
+['Що таке Запорізька Січ?',['Столиця Київської Русі','Козацька військово-політична організація за дніпровськими порогами','Польський сейм','Церковний орден'],1,'Запорізька Січ була центром українського козацтва.']];
+var F=['Софійський собор у Києві закладено в XI столітті за часів Ярослава Мудрого.','Битва під Полтавою відбулася 1709 року, і в ній брав участь гетьман Іван Мазепа.','Конституцію Пилипа Орлика датовано 1710 роком.','Тарас Шевченко народився 9 березня 1814 року.','III Універсал проголосив Українську Народну Республіку в листопаді 1917 року.','Голодомор 1932–1933 років забрав мільйони життів в Україні.','Помаранчева революція відбулася наприкінці 2004 року.'];
+var S={done:{},days:[],rem:[],chat:[],sub:'prog',qz:{},q2:{}};
+var B={
+prog:['Програмування',[
+['Що виведе 2+"2" у JavaScript?',['4','22','NaN','помилку'],1,'Число при додаванні з рядком стає рядком, тому результат «22».'],
+['Який цикл виконається хоча б раз, навіть якщо умова хибна?',['for','while','do...while','forEach'],2,'У do...while умову перевіряють після виконання тіла.'],
+['Що робить оператор === у JavaScript?',['Присвоює значення','Порівнює значення й тип','Порівнює лише значення','Додає числа'],1,'Це строге порівняння: значення й тип мають збігатися.'],
+['Що таке функція?',['Змінна для тексту','Іменований блок коду, який можна викликати','Тип даних','Коментар'],1,'Функцію можна викликати багато разів.'],
+['Який індекс має перший елемент масиву в більшості мов?',['1','0','-1','2'],1,'Нумерація масивів зазвичай починається з нуля.'],
+['Що повертає "abc".length у JavaScript?',['2','3','4','abc'],1,'length повертає кількість символів: 3.'],
+['Для чого потрібен git?',['Для малювання','Для контролю версій коду','Для запуску сайтів','Для шифрування'],1,'Git зберігає історію змін і допомагає працювати командою.']]],
+trade:['Трейдинг',[
+['Що означає червона свічка в стандартній схемі більшості платформ?',['Ціна закриття нижча за ціну відкриття','Ціна зросла','Обсяг дорівнює нулю','Ринок закритий'],0,'Колір може відрізнятися в налаштуваннях, але зазвичай червона свічка — спадна.'],
+['Який ризик на одну угоду вважають поширеною орієнтацією?',['50% рахунку','1–2% рахунку','100% рахунку','Скільки завгодно'],1,'Це навчальна орієнтація, а не порада: мала частка рахунку захищає від серії збитків.'],
+['Що таке стоп-лосс?',['Наказ закрити угоду при заданому збитку','Комісія брокера','Тип графіка','Вид акції'],0,'Стоп-лосс обмежує збиток заздалегідь визначеним рівнем.'],
+['Що означає «бичачий» ринок?',['Ціни переважно падають','Ціни переважно зростають','Ринок без руху','Ринок закрито'],1,'Бичачий ринок — період переважного зростання цін.'],
+['Що таке диверсифікація?',['Вкладення всього в один актив','Розподіл коштів між різними активами','Продаж у збиток','Торгівля вночі'],1,'Диверсифікація зменшує вплив збитків одного активу.'],
+['Що таке спред?',['Різниця між ціною купівлі та продажу','Податок','Назва біржі','Обсяг торгів'],0,'Спред — різниця між найкращою ціною купівлі та продажу.'],
+['Що таке кредитне плече?',['Безкоштовні гроші','Позичені кошти, що збільшують і прибуток, і збиток','Гарантія прибутку','Знижка на комісію'],1,'Плече збільшує і прибуток, і збиток, тому підвищує ризик.']]],
+eng:['Англійська',[
+['She ___ to work every day.',['go','goes','going','gone'],1,'У Present Simple для she додаємо -s: goes.'],
+['Past Simple від go:',['goed','went','gone','going'],1,'Go — неправильне дієслово: go, went, gone.'],
+['I saw ___ elephant.',['a','an','the','—'],1,'Перед голосним звуком вживаємо an.'],
+['Що означає «Could you repeat that?»',['Ви можете це повторити?','Куди ви йдете?','Скільки це коштує?','Дякую'],0,'Ввічливе прохання повторити сказане.'],
+['There ___ two books on the table.',['is','are','be','am'],1,'Для множини вживаємо are.'],
+['I have lived here ___ 2020.',['for','since','during','from'],1,'Since — з певного моменту, for — протягом періоду.'],
+['Протилежне до «expensive»:',['cheap','early','heavy','quiet'],0,'Cheap — дешевий.']]]};
+var W=[['improve','покращувати','I want to improve my English.'],['achieve','досягати','She worked hard to achieve her goal.'],['borrow','позичати','Can I borrow your pen?'],['reliable','надійний','He is a reliable friend.'],['challenge','виклик','Learning is a challenge.'],['ignore','ігнорувати','Don’t ignore the warning.'],['suggest','пропонувати','I suggest a short break.'],['available','доступний','Is this seat available?'],['remember','пам’ятати','I remember this song.'],['decide','вирішувати','We need to decide today.'],['enough','достатньо','This is enough for me.'],['develop','розвивати','They develop mobile apps.'],['however','проте','It’s hard; however, it’s fun.'],['avoid','уникати','Avoid distractions while studying.']];
+function qb(k,per){
+  var d=day(),b=B[k][1],s=(di()*per)%b.length,ix=[],i;for(i=0;i<per;i++)ix.push((s+i)%b.length);
+  var st=S.q2[k];if(!st||st.d!==d)st=S.q2[k]={d:d,a:{}};
+  var h='<div class="card"><h2>Завдання дня</h2>',right=0,got=0;
+  ix.forEach(function(qi,n){var q=b[qi],a=st.a[qi];
+    h+='<p><b>'+(n+1)+'. '+q[0]+'</b></p>';
+    q[1].forEach(function(o,oi){var c=a===undefined?'':(oi===q[2]?' ok':(oi===a?' bad':''));h+='<button class="opt'+c+'" data-q2="'+k+':'+qi+':'+oi+'"'+(a!==undefined?' disabled':'')+'>'+o+'</button>'});
+    if(a!==undefined){got++;if(a===q[2])right++;h+='<p class="empty">'+q[3]+'</p>'}});
+  return h+(got===per?'<span class="pill">Результат: '+right+' з '+per+'. Нові завдання завтра.</span>':'')+'</div>';
+}
+function words(){var s=(di()*3)%W.length,h='<div class="card"><h2>Слова дня</h2>';for(var i=0;i<3;i++){var w=W[(s+i)%W.length];h+='<p style="margin:0 0 10px"><b>'+w[0]+'</b> — '+w[1]+'<br><small style="color:var(--muted)">'+w[2]+'</small></p>'}return h+'</div>'}
+function daily(k){return k==='school'?today():k==='eng'?words()+qb('eng',2):qb(k,2)}
+function di(){return Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/864e5)}
+function qs(){var s=(di()*3)%Q.length;return [0,1,2].map(function(i){return (s+i)%Q.length})}
+function today(){
+  var d=day();if(S.qz.d!==d)S.qz={d:d,a:{}};
+  var h='<div class="card"><h2>Факт дня з історії</h2><p style="margin:0">'+F[di()%F.length]+'</p></div><div class="card"><h2>Тест дня (НМТ)</h2>',right=0,got=0;
+  qs().forEach(function(qi,n){var q=Q[qi],a=S.qz.a[qi];
+    h+='<p><b>'+(n+1)+'. '+q[0]+'</b></p>';
+    q[1].forEach(function(o,oi){var c=a===undefined?'':(oi===q[2]?' ok':(oi===a?' bad':''));h+='<button class="opt'+c+'" data-ans="'+qi+':'+oi+'"'+(a!==undefined?' disabled':'')+'>'+o+'</button>'});
+    if(a!==undefined){got++;if(a===q[2])right++;h+='<p class="empty">'+q[3]+'</p>'}});
+  return h+(got===3?'<span class="pill">Результат: '+right+' з 3. Нові питання завтра.</span>':'')+'</div>';
+}
+try{var raw=localStorage.getItem('jarvis');if(raw)S=Object.assign(S,JSON.parse(raw))}catch(x){}
+function save(){try{localStorage.setItem('jarvis',JSON.stringify(S))}catch(x){}}
+function e(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function day(d){d=d||new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function streak(){var n=0,d=new Date();if(S.days.indexOf(day(d))<0)d.setDate(d.getDate()-1);while(S.days.indexOf(day(d))>=0){n++;d.setDate(d.getDate()-1)}return n}
+function cnt(k){var n=0;L[k].l.forEach(function(_,i){if(S.done[k+i])n++});return n}
+function total(){var n=0;Object.keys(L).forEach(function(k){n+=cnt(k)});return n}
+var view='home',main=document.getElementById('v');
+function toast(t){var el=document.getElementById('toast');el.textContent=t;el.style.display='block';setTimeout(function(){el.style.display='none'},5000)}
+function home(){
+  var all=Object.keys(L).length*4,done=total(),p=Math.round(done/all*100),C=2*Math.PI*90;
+  var dt=new Date().toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'});
+  var t=Object.keys(L).map(function(k){var c=cnt(k);return '<button class="tile" data-sub="'+k+'"><b>'+L[k].n+'</b><small>'+c+' з 4 уроків</small><div class="mb"><i style="width:'+c*25+'%"></i></div></button>'}).join('');
+  return '<p class="date">'+dt+'</p><h1 class="serif">Привіт! Що вчимо сьогодні?</h1>'+
+  '<div class="card hero"><div class="ring"><svg viewBox="0 0 208 208"><defs><linearGradient id="rg"><stop offset="0" stop-color="var(--g1)"/><stop offset="1" stop-color="var(--g2)"/></linearGradient></defs><circle class="bg" cx="104" cy="104" r="90"/><circle class="fg" cx="104" cy="104" r="90" stroke-dasharray="'+C+'" stroke-dashoffset="'+C*(1-p/100)+'"/></svg><b><span class="score serif">'+p+'%</span><small>усього пройдено</small></b></div>'+
+  '<span class="pill">Серія: '+streak()+' дн. · Бали: '+done*10+'</span></div><div class="tiles">'+t+'</div>';
+}
+function learn(){
+  var k=S.sub,chips=Object.keys(L).map(function(x){return '<button class="chip" data-sub="'+x+'" aria-pressed="'+(x===k)+'">'+L[x].n+'</button>'}).join('');
+  var ls=L[k].l.map(function(a,i){var on=S.done[k+i];return '<button class="les'+(on?' on':'')+'" data-les="'+i+'" aria-pressed="'+!!on+'"><span class="ck">✓</span><span><b>'+a[0]+'</b><small>'+a[1]+'</small></span></button>'}).join('');
+  return '<h1 class="serif">Навчання</h1><div class="chips">'+chips+'</div>'+daily(k)+'<div class="card">'+ls+'</div>';
+}
+function remind(){
+  var perm=window.Notification&&Notification.permission!=='granted'&&Notification.permission!=='denied';
+  var list=S.rem.slice().sort(function(a,b){return a.at<b.at?-1:1}).map(function(r){return '<div class="rem'+(r.fired?' fired':'')+'"><span><b>'+e(r.t)+'</b><br><small>'+new Date(r.at).toLocaleString('uk-UA',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+'</small></span><button class="btn soft" data-del="'+r.id+'" aria-label="Видалити нагадування">Видалити</button></div>'}).join('');
+  return '<h1 class="serif">Нагадування</h1><div class="card"><input class="field" id="rt" placeholder="Про що нагадати?" aria-label="Текст нагадування"><input class="field" id="ra" type="datetime-local" aria-label="Коли нагадати"><button class="btn" data-add>Додати нагадування</button>'+(perm?' <button class="btn soft" data-perm>Дозволити сповіщення</button>':'')+'</div><div class="card">'+(list||'<p class="empty">Нагадувань ще немає. Додайте перше вище.</p>')+'</div><p class="empty">Сповіщення спрацьовують, поки сторінка відкрита.</p>';
+}
+function ai(){
+  var m=S.chat.map(function(c){return '<div class="msg'+(c.me?' me':'')+'">'+e(c.t)+'</div>'}).join('');
+  return '<h1 class="serif">AI-помічник</h1><div class="card">'+(m||'<p class="empty">Привіт! Я JARVIS. Поставте своє запитання — відповім за допомогою AI.</p>')+'</div><div class="card"><input class="field" id="q" placeholder="Ваше запитання" aria-label="Запитання до AI"><button class="btn" data-send>Надіслати</button></div>';
+}
+function render(){
+  view=(location.hash||'#home').slice(1);if(!{home:1,learn:1,remind:1,ai:1}[view])view='home';
+  main.innerHTML={home:home,learn:learn,remind:remind,ai:ai}[view]();
+  [].forEach.call(document.querySelectorAll('nav a'),function(a){if(a.getAttribute('href')==='#'+view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+}
+main.addEventListener('click',async function(ev){
+  var t=ev.target.closest('[data-sub],[data-les],[data-add],[data-del],[data-perm],[data-send],[data-ans],[data-q2]');if(!t)return;
+  if(t.dataset.sub){S.sub=t.dataset.sub;save();if(view==='home')location.hash='#learn';else render()}
+  else if(t.dataset.les!==undefined){var id=S.sub+t.dataset.les;if(S.done[id])delete S.done[id];else{S.done[id]=1;var d=day();if(S.days.indexOf(d)<0)S.days.push(d)}save();render()}
+  else if('add' in t.dataset){var tx=document.getElementById('rt').value.trim(),at=document.getElementById('ra').value;if(!tx||!at){toast('Введіть текст і час нагадування');return}S.rem.push({id:Date.now(),t:tx,at:at,fired:false});save();render()}
+  else if(t.dataset.del){S.rem=S.rem.filter(function(r){return String(r.id)!==t.dataset.del});save();render()}
+  else if('perm' in t.dataset){try{Notification.requestPermission().then(render)}catch(x){}}
+  else if(t.dataset.q2){var p2=t.dataset.q2.split(':'),k2=p2[0],d2=day(),st=S.q2[k2];if(!st||st.d!==d2)st=S.q2[k2]={d:d2,a:{}};st.a[p2[1]]=+p2[2];if(S.days.indexOf(d2)<0)S.days.push(d2);save();render()}
+  else if(t.dataset.ans){var p=t.dataset.ans.split(':'),d=day();if(S.qz.d!==d)S.qz={d:d,a:{}};S.qz.a[p[0]]=+p[1];if(qs().every(function(qi){return S.qz.a[qi]!==undefined})&&S.days.indexOf(d)<0)S.days.push(d);save();render()}
+  else if('send' in t.dataset){
+    var input=document.getElementById('q'),q=input.value.trim();if(!q)return;
+    if(q.length>5000){toast('Повідомлення задовге (максимум 5000 символів)');return}
+    var history=S.chat.slice(-12).map(function(c){return {role:c.me?'user':'assistant',content:c.t}});
+    S.chat.push({me:1,t:q},{t:'JARVIS думає…'});save();render();
+    var sendButton=main.querySelector('[data-send]');if(sendButton)sendButton.disabled=true;
+    try{
+      var response=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:history})});
+      var data=await response.json();
+      if(!response.ok)throw new Error(data.error||'Помилка сервера');
+      S.chat[S.chat.length-1]={t:data.reply||'Не вдалося отримати відповідь.'};
+    }catch(err){S.chat[S.chat.length-1]={t:'Не вдалося зв’язатися з AI: '+(err.message||'невідома помилка')+'. Перевірте серверні налаштування Netlify.'}}
+    save();render();
+  }
+});
+function tick(){var now=Date.now(),hit=false;S.rem.forEach(function(r){if(!r.fired&&new Date(r.at).getTime()<=now){r.fired=true;hit=true;toast('Нагадування: '+r.t);try{if(window.Notification&&Notification.permission==='granted')new Notification('Джарвіс',{body:r.t})}catch(x){}}});if(hit){save();if(view==='remind')render()}}
+window.addEventListener('hashchange',render);render();setInterval(tick,20000);tick();
+</script>
+</body>
+</html>
