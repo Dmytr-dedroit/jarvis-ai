@@ -1,8 +1,12 @@
+
 export default async (req) => {
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({ error: "Method not allowed" }),
-      { status: 405 }
+      {
+        status: 405,
+        headers: { "Content-Type": "application/json" }
+      }
     );
   }
 
@@ -13,7 +17,20 @@ export default async (req) => {
     if (!apiKey) {
       return new Response(
         JSON.stringify({ error: "API key is missing" }),
-        { status: 500 }
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    if (!message) {
+      return new Response(
+        JSON.stringify({ error: "Message is empty" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
       );
     }
 
@@ -23,7 +40,7 @@ export default async (req) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey}`
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
@@ -32,7 +49,10 @@ export default async (req) => {
               role: "system",
               content: "Ти JARVIS — розумний персональний AI-помічник. Відповідай українською, чітко та дружньо."
             },
-            { role: "user", content: message }
+            {
+              role: "user",
+              content: message
+            }
           ]
         })
       }
@@ -40,15 +60,35 @@ export default async (req) => {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: { "Content-Type": "application/json" }
-    });
+    if (!response.ok) {
+      return new Response(
+        JSON.stringify({
+          error: data.error?.message || "OpenAI API error"
+        }),
+        {
+          status: response.status,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    const reply = data.choices?.[0]?.message?.content;
+
+    return new Response(
+      JSON.stringify({ reply }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
 
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: "Server error" }),
-      { status: 500 }
+      JSON.stringify({ error: error.message || "Server error" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
     );
   }
 };
